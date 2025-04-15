@@ -41,9 +41,15 @@ def generate_eeprom_hex(filename="output.hex", size=512):
     # Initialize EEPROM data array
     eeprom_data = np.zeros(size, dtype=np.uint8)
 
-    # Populate EEPROM data repeating every 16 addresses
-    for addr in range(size):
+    # Populate EEPROM data repeating every 16 addresses - from addr 000 to 0ff
+    for addr in range(256):
         eeprom_data[addr] = seven_seg_values[addr % 16]
+
+    # Populate EEPROM data in game mode - from addr 100 to 1ff
+    count = 0;
+    for addr in range(256, size):
+        eeprom_data[addr] = count
+        count += 1
 
     # Write data as standard Intel HEX (16 bytes per line)
     with open(filename, "w") as hex_file:
