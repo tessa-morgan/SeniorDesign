@@ -5,9 +5,9 @@ Before you can run the program, enter the following commands in the terminal:
 (This must be done every time, in the directory with the file)
 
 source myenv/bin/activate
-python3 -m pip install pandas numpy openpyxl
+python3 -m pip install numpy
 
-Then run with: python3 Decoder2.py
+Then run with: python3 Decoder3.py
 
 Once done, run the command: deactivate
 
