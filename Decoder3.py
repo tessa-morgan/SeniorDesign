@@ -18,7 +18,7 @@ python3 -m venv myenv
 
 # Define your 7-segment decoder values for inputs 0–F
 # Input to EEPROM in order: DP, G, F, E, D, C, B, A
-seven_seg_values = [ 
+"""seven_seg_values = [ 
     0x3F,  # 0, 0b00111111
     0x06,  # 1, 0b00000110
     0x5B,  # 2, 0b01011011
@@ -35,6 +35,25 @@ seven_seg_values = [
     0x5E,  # D, 0b01011110
     0x79,  # E, 0b01111001
     0x71   # F, 0b01110001
+] """
+
+seven_seg_values = [ 
+    0xc0,  # 0, 0b00111111
+    0xF9,  # 1, 0b00000110
+    0xA4,  # 2, 0b01011011
+    0xB0,  # 3, 0b01001111
+    0x99,  # 4, 0b01100110
+    0x92,  # 5, 0b01101101
+    0x82,  # 6, 0b01111101
+    0xF8,  # 7, 0b00000111
+    0x80,  # 8, 0b01111111
+    0x90,  # 9, 0b01101111
+    0x88,  # A, 0b01110111
+    0x83,  # B, 0b01111100
+    0xC6,  # C, 0b00111001
+    0xA1,  # D, 0b01011110
+    0x86,  # E, 0b01111001
+    0x8E   # F, 0b01110001
 ]
 
 def generate_eeprom_hex(filename="output.hex", size=512):
@@ -46,10 +65,10 @@ def generate_eeprom_hex(filename="output.hex", size=512):
         eeprom_data[addr] = seven_seg_values[addr % 16]
 
     # Populate EEPROM data in game mode - from addr 100 to 1ff
-    count = 0;
+    count = 255;
     for addr in range(256, size):
         eeprom_data[addr] = count
-        count += 1
+        count -= 1
 
     # Write data as standard Intel HEX (16 bytes per line)
     with open(filename, "w") as hex_file:
