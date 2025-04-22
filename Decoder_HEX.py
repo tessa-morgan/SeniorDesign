@@ -6,7 +6,7 @@ Before you can run the program, enter the following commands in the terminal:
 
 source myenv/bin/activate
 
-Then run with: python3 Decoder3.py
+Then run with: python3 Decoder_HEX.py
 
 Once done, run the command: deactivate
 
