@@ -6,7 +6,7 @@ Before you can run the program, enter the following commands in the terminal:
 
 source myenv/bin/activate
 
-Then run with: python3 Decoder3.py
+Then run with: python3 Decoder_BIN.py
 
 Once done, run the command: deactivate
 
@@ -72,37 +72,15 @@ def generate_eeprom(size=512):
         eeprom_anode[addr] = count
         eeprom_cathode[addr] = 255 - count #cathode ends at 511 i.e. size - 1
         count -= 1
-   
-   # write_hex_file("output_anode.hex", eeprom_anode)
-   # write_hex_file("output_cathode.hex", eeprom_cathode)
+
     write_bin_file("output_anode.bin", eeprom_anode)
     write_bin_file("output_cathode.bin", eeprom_cathode)
-
-def write_hex_file(filename, eeprom_data, size=512):
-    # Write data as standard Intel HEX (16 bytes per line), requires checksum
-    with open(filename, "w") as hex_file:
-        for addr in range(0, size, 16):
-            chunk = eeprom_data[addr:addr+16]
-            byte_count = len(chunk)
-            address_high = (addr >> 8) & 0xFF
-            address_low = addr & 0xFF
-            record_type = 0x00
-            checksum = byte_count + address_high + address_low + record_type + sum(int(b) for b in chunk)
-            checksum = ((~checksum + 1) & 0xFF)  # Two's complement checksum
-            data_str = ''.join(f'{b:02X}' for b in chunk)
-            line = f":{byte_count:02X}{addr:04X}{record_type:02X}{data_str}{checksum:02X}\n"
-            hex_file.write(line)
-
-        # EOF record
-        hex_file.write(":00000001FF\n")
-
-    print(f"HEX file '{filename}' generated successfully.")
 
 def write_bin_file(filename, eeprom_data):
     with open(filename, "wb") as f:
         f.write(bytes(eeprom_data))
     print(f"Binary file '{filename}' generated successfully.")
 
-# Generate HEX file
+# Generate .bin files
 generate_eeprom()
 
