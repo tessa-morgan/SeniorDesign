@@ -5,7 +5,6 @@ Before you can run the program, enter the following commands in the terminal:
 (This must be done every time, in the directory with the file)
 
 source myenv/bin/activate
-python3 -m pip install numpy
 
 Then run with: python3 Decoder3.py
 
@@ -13,12 +12,13 @@ Once done, run the command: deactivate
 
 Only the first time in a new directory, run:
 python3 -m venv myenv
+python3 -m pip install numpy
 """
 
 
 # Define your 7-segment decoder values for inputs 0–F
 # Input to EEPROM in order: DP, G, F, E, D, C, B, A
-"""seven_seg_values = [ 
+seven_seg_cathode = [ 
     0x3F,  # 0, 0b00111111
     0x06,  # 1, 0b00000110
     0x5B,  # 2, 0b01011011
@@ -35,9 +35,9 @@ python3 -m venv myenv
     0x5E,  # D, 0b01011110
     0x79,  # E, 0b01111001
     0x71   # F, 0b01110001
-] """
+] 
 
-seven_seg_values = [ 
+seven_seg_anode = [ 
     0xc0,  # 0, 0b00111111
     0xF9,  # 1, 0b00000110
     0xA4,  # 2, 0b01011011
@@ -56,21 +56,30 @@ seven_seg_values = [
     0x8E   # F, 0b01110001
 ]
 
-def generate_eeprom_hex(filename="output.hex", size=512):
+def generate_eeprom(size=512):
     # Initialize EEPROM data array
-    eeprom_data = np.zeros(size, dtype=np.uint8)
+    eeprom_anode = np.zeros(size, dtype=np.uint8)
+    eeprom_cathode = np.zeros(size, dtype=np.uint8)
 
     # Populate EEPROM data repeating every 16 addresses - from addr 000 to 0ff
     for addr in range(256):
-        eeprom_data[addr] = seven_seg_values[addr % 16]
+        eeprom_anode[addr] = seven_seg_anode[addr % 16]
+        eeprom_cathode[addr] = seven_seg_cathode[addr % 16]
 
     # Populate EEPROM data in game mode - from addr 100 to 1ff
-    count = 255;
+    count = 255
     for addr in range(256, size):
-        eeprom_data[addr] = count
+        eeprom_anode[addr] = count
+        eeprom_cathode[addr] = 255 - count #cathode ends at 511 i.e. size - 1
         count -= 1
+   
+   # write_hex_file("output_anode.hex", eeprom_anode)
+   # write_hex_file("output_cathode.hex", eeprom_cathode)
+    write_bin_file("output_anode.bin", eeprom_anode)
+    write_bin_file("output_cathode.bin", eeprom_cathode)
 
-    # Write data as standard Intel HEX (16 bytes per line)
+def write_hex_file(filename, eeprom_data, size=512):
+    # Write data as standard Intel HEX (16 bytes per line), requires checksum
     with open(filename, "w") as hex_file:
         for addr in range(0, size, 16):
             chunk = eeprom_data[addr:addr+16]
@@ -89,5 +98,11 @@ def generate_eeprom_hex(filename="output.hex", size=512):
 
     print(f"HEX file '{filename}' generated successfully.")
 
+def write_bin_file(filename, eeprom_data):
+    with open(filename, "wb") as f:
+        f.write(bytes(eeprom_data))
+    print(f"Binary file '{filename}' generated successfully.")
+
 # Generate HEX file
-generate_eeprom_hex()
+generate_eeprom()
+
