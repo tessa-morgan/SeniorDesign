@@ -18,7 +18,7 @@ python3 -m pip install numpy
 
 # Define your 7-segment decoder values for inputs 0–F
 # Input to EEPROM in order: DP, G, F, E, D, C, B, A
-seven_seg_cathode = [ 
+seven_seg_codes = [ 
     0x3F,  # 0, 0b00111111
     0x06,  # 1, 0b00000110
     0x5B,  # 2, 0b01011011
@@ -63,8 +63,8 @@ def generate_eeprom(size=512):
 
     # Populate EEPROM data repeating every 16 addresses - from addr 000 to 0ff
     for addr in range(256):
-        eeprom_anode[addr] = seven_seg_anode[addr % 16]
-        eeprom_cathode[addr] = seven_seg_cathode[addr % 16]
+        eeprom_anode[addr] = 0xFF ^ seven_seg_codes[addr % 16]
+        eeprom_cathode[addr] = seven_seg_codes[addr % 16]
 
     # Populate EEPROM data in game mode - from addr 100 to 1ff
     count = 255
